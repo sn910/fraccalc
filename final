@@ -1,0 +1,284 @@
+package fracCalc;
+import java.util.*;
+
+public class FracCalc {
+	
+	public static String answer;
+	public static int gcf;
+	public static int new_num1;
+	public static int new_num2;
+	public static int diff_num;
+	public static int final_num;
+	public static int final_denom;
+
+    public static void main(String[] args) {
+    	Scanner input = new Scanner(System.in);
+    	String replay = (" ");
+    	while (!replay.equalsIgnoreCase("quit")) {
+    		System.out.println("Please type in an equation.");
+        	String inputValue = input.nextLine();	
+        	produceAnswer_cp2(inputValue);
+        	produceAnswer_cp3_and_final(inputValue);
+        	System.out.println("Would you like to continue? Type quit to quit the game and yes to continue.");
+    		replay = input.nextLine();
+    	}
+    }
+
+    public static String produceAnswer_cp1(String inputValue) {
+    	// parses first fraction
+    	String term_1 = inputValue.substring(0, inputValue.indexOf(" "));
+    	// parses operator
+    	String operator = inputValue.substring(inputValue.indexOf(" ") + 1, inputValue.indexOf(" ") + 2);
+    	// parses second fraction
+    	String term_2 = inputValue.substring(inputValue.indexOf(" ") + 3);
+    	System.out.println(term_2);
+    	return term_2;
+    }
+    
+    public static String produceAnswer_cp2(String inputValue) {
+    	String whole = ("0");
+    	String numerator = ("0");
+    	String denominator = ("0");
+    	int num = Integer.valueOf(numerator);
+    	int denom = Integer.valueOf(denominator);
+    	int whole2 = Integer.valueOf(whole); 
+    	String term_1 = inputValue.substring(0, inputValue.indexOf(" "));
+    	String operator = inputValue.substring(inputValue.indexOf(" ") + 1, inputValue.indexOf(" ") + 2);
+    	String term_2 = inputValue.substring(inputValue.indexOf(" ") + 3);
+    	 if (term_2.contains("/")) { // for fractions and not just whole numbers
+     		if (term_2.contains("_")) { // for mixed numbers
+     			whole2 = Integer.parseInt(term_2.substring(0, term_2.indexOf("_")));
+     			num = Integer.parseInt(term_2.substring(term_2.indexOf("_") + 1, term_2.indexOf("/")));
+     		} else { // for improper or normal fractions
+     			num = Integer.parseInt(term_2.substring(0, term_2.indexOf("/")));
+     			whole2 = 0;
+     		}
+     		denom = Integer.parseInt(term_2.substring(term_2.indexOf("/") + 1));
+     	} else { // for whole numbers
+     		whole2 = Integer.parseInt(term_2);
+     		denom = 1;
+     	}
+    	// prints whole, numerator, and denominator for second fraction 
+		String output = ("whole:" + whole2 + " numerator:" + num + " denominator:" + denom);
+		System.out.println(output);
+    	return output;
+    }
+    
+    public static String produceAnswer_cp3_and_final(String inputValue) {
+    	int whole = 0;
+    	String numerator = ("0");
+    	String denominator = ("0");
+    	int num1 = Integer.valueOf(numerator);
+    	int denom1 = Integer.valueOf(denominator);
+    	int whole1 = 0;
+    	int num2 = Integer.valueOf(numerator);
+    	int denom2 = Integer.valueOf(denominator);
+    	int whole2 = 0;
+    	int num_t = 0;
+    	int denom_t = 1;
+    	String term_1 = inputValue.substring(0, inputValue.indexOf(" "));
+    	String operator = inputValue.substring(inputValue.indexOf(" ") + 1, inputValue.indexOf(" ") + 2);
+    	String term_2 = inputValue.substring(inputValue.indexOf(" ") + 3);
+    	// parsing second fraction
+    	if (term_2.contains("/")) {
+     		if (term_2.contains("_")) {
+     			whole2 = Integer.parseInt(term_2.substring(0, term_2.indexOf("_")));
+     			num2 = Integer.parseInt(term_2.substring(term_2.indexOf("_") + 1, term_2.indexOf("/")));
+     		} else {
+     			num2 = Integer.parseInt(term_2.substring(0, term_2.indexOf("/")));
+     			whole2 = 0;
+     		}
+     		denom2 = Integer.parseInt(term_2.substring(term_2.indexOf("/") + 1));
+     	} else {
+     		whole2 = Integer.parseInt(term_2);
+     		denom2 = 1;
+     	}
+    	int imp_num2 = imp_num(whole2, num2, denom2); // numerator after making mixed fraction an improper fraction
+    	// parsing first fraction
+    	if (term_1.contains("/")) {
+     		if (term_1.contains("_")) {
+     			whole1 = Integer.parseInt(term_1.substring(0, term_1.indexOf("_")));
+     			num1 = Integer.parseInt(term_1.substring(term_1.indexOf("_") + 1, term_1.indexOf("/")));
+     		} else {
+     			num1 = Integer.parseInt(term_1.substring(0, term_1.indexOf("/")));
+     			whole1 = 0;
+     		}
+     		denom1 = Integer.parseInt(term_1.substring(term_1.indexOf("/") + 1));
+     	} else {
+     		whole1 = Integer.parseInt(term_1);
+     		denom1 = 1;
+     	}
+    	int imp_num1 = imp_num(whole1, num1, denom1); // numerator after making mixed fraction an improper fraction
+    	if (operator.equals("+")) { // addition
+    		denom_t = denom1 * denom2; // makes denominators equal
+    		new_num1 = imp_num1 * denom2; // multiplies first fraction's numerator with second fraction's denominator
+    		new_num2 = imp_num2 * denom1; // multiplies second fraction's numerator with first fraction's denominator
+    		num_t = new_num1 + new_num2; // adds numerators
+    		diff_num = (num_t % denom_t); // remainder gives a number that is separate from whole but going to be added to whole
+    		whole = (num_t - diff_num)/denom_t; // gives final whole number
+    		if (whole < 0) { // makes sure negative sign is only at whole number
+    			diff_num = Math.abs(diff_num);
+        		denom_t = Math.abs(denom_t);
+    		}
+    		int gcf = gcf(diff_num, denom_t); // takes gcf
+        	int final_num = diff_num/gcf; // reduces fraction's numerator
+        	int final_denom = denom_t/gcf; // reduces fraction's denominator
+        	if (final_num < 0 && final_denom < 0) { // just in case we have a negative numerator and denominator so we get a positive fraction
+        		final_num = Math.abs(final_num);
+        		final_denom = Math.abs(final_denom);
+        	}
+        	if (final_num > 0 && final_denom < 0) { // negative in denominator given to numerator if we have mixed fraction
+        		final_num = final_num * -1;
+        		final_denom = Math.abs(final_denom);
+        	}
+        	String one = Integer.toString(final_num);
+        	String two = Integer.toString(final_denom);
+        	String three = Integer.toString(whole);
+        	String answer = null;
+        	if (three.equals("0")) { // makes sure that "0_" isn't printed in an improper fraction
+        		answer = one + "/" + two;
+        	}
+        	else { // prints normal mixed fraction
+        		answer = three + "_" + one + "/" + two;
+        	}
+        	if (one.equals("0")) { // only prints whole number if numerator is 0
+        		answer = three;
+        	}
+        	
+        	return answer;
+    	} else if (operator.equals("-")) { // subtraction
+    		denom_t = denom1 * denom2; 
+        	new_num1 = imp_num1 * denom2; 
+        	new_num2 = imp_num2 * denom1; 
+        	num_t = new_num1 - new_num2; // subtracts numerators
+        	diff_num = (num_t % denom_t); 
+        	whole = (num_t - diff_num)/denom_t; 
+        	
+        	if (whole < 0) { 
+        		diff_num = Math.abs(diff_num);
+        		denom_t = Math.abs(denom_t);
+        	}  
+        	int gcf = gcf(diff_num, denom_t); 
+        	int final_num = diff_num/gcf;
+        	int final_denom = denom_t/gcf; 
+        	if (final_num < 0 && final_denom < 0) { 
+        		final_num = Math.abs(final_num);
+        		final_denom = Math.abs(final_denom);
+        	}
+        	if (final_num > 0 && final_denom < 0) { 
+        		final_num = final_num * -1;
+        		final_denom = Math.abs(final_denom);
+        	}
+        	String one = Integer.toString(final_num);
+        	String two = Integer.toString(final_denom);
+        	String three = Integer.toString(whole);
+        	String answer = null;
+        	if (three.equals("0")) { 
+        		answer = one + "/" + two;
+        	}
+        	else { 
+        		answer = three + "_" + one + "/" + two;
+        	}
+        	if (one.equals("0")) { 
+        		answer = three;
+        	}
+        	return answer;
+    	} else if (operator.equals("*")) { // multiplication
+    		denom_t = denom1 * denom2; 
+        	num_t = imp_num1 * imp_num2; // multiplies fractions
+        	diff_num = (num_t % denom_t); 
+        	whole = (num_t - diff_num)/denom_t; 
+        	
+        	if (whole < 0) { 
+        		diff_num = Math.abs(diff_num);
+        		denom_t = Math.abs(denom_t);
+        	}  
+        	int gcf = gcf(diff_num, denom_t); 
+        	int final_num = diff_num/gcf;
+        	int final_denom = denom_t/gcf; 
+        	
+        	if (final_num < 0 && final_denom < 0) { 
+        		final_num = Math.abs(final_num);
+        		final_denom = Math.abs(final_denom);
+        	}
+        	if (final_num > 0 && final_denom < 0) { 
+        		final_num = final_num * -1;
+        		final_denom = Math.abs(final_denom);
+        	}
+        	String one = Integer.toString(final_num);
+        	String two = Integer.toString(final_denom);
+        	String three = Integer.toString(whole);
+        	String answer = "0";
+        	if (three.equals("0")) { 
+        		answer = one + "/" + two;
+        	}
+        	else { 
+        		answer = three + "_" + one + "/" + two;
+        	}
+        	if (one.equals("0")) { 
+        		answer = three;
+        	}
+        	return answer;
+    	} else if (operator.equals("/")) { // division
+    	 	denom_t = imp_num2 * denom1; // multiplies with reciprocal
+        	num_t = denom2 * imp_num1; // multiplies with reciprocal
+        	diff_num = (num_t % denom_t); 
+        	whole = (num_t - diff_num)/denom_t; 
+        	
+        	if (whole < 0) { 
+        		diff_num = Math.abs(diff_num);
+        		denom_t = Math.abs(denom_t);
+        	}  
+        	int gcf = gcf(diff_num, denom_t); 
+        	int final_num = diff_num/gcf;
+        	int final_denom = denom_t/gcf; 
+        	if (final_num < 0 && final_denom < 0) { 
+        		final_num = Math.abs(final_num);
+        		final_denom = Math.abs(final_denom);
+        	}
+        	if (final_num > 0 && final_denom < 0) { 
+        		final_num = final_num * -1;
+        		final_denom = Math.abs(final_denom);
+        	}
+        	String one = Integer.toString(final_num);
+        	String two = Integer.toString(final_denom);
+        	String three = Integer.toString(whole);
+        	String answer = null;
+        	if (three.equals("0")) {
+        		answer = one + "/" + two;
+        	}
+        	else { 
+        		answer = three + "_" + one + "/" + two;
+        	}
+        	if (one.equals("0")) { 
+        		answer = three;
+        	}
+        	return answer;
+    	} else {
+    		System.out.println("Invalid");
+    	}
+    	return answer;
+    }
+    
+    // outputs the numerator when you convert a mixed fraction to an improper fraction
+    public static int imp_num (int whole, int num, int denom) {
+    	int imp = whole * denom;
+    	if (whole >= 0) {
+    		imp += num;
+    	} else {
+    		imp -= num;
+    	}
+    	return imp;
+    }
+    
+    // outputs gcf of 2 fractions to reduce
+    public static int gcf (int numerator, int denominator) {
+    	int gcf = 1;
+    	for (int i = 1; i <= Math.abs(numerator) && i <= Math.abs(denominator); i++) {
+    		if(numerator % i == 0 && denominator % i == 0) {
+                gcf = i;
+    		}
+    	}
+    	return gcf;
+    }
+}   
